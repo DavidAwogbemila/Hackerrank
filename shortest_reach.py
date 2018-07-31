@@ -6,6 +6,7 @@ Given q queries in the form of a graph and some starting node, s, perform each q
 starting node s to all the other nodes in the graph. Then print a single line of n-1 space-separated integers listing node s's 
 sshortest distance to each of the n-1 other nodes (ordered sequentially by node number); if s is disconnected from a node, 
 print -1 as the distance to that node.
+This times out on one case in hackerrank. haven't really been able to figure out ways to make it faster :(.
 """
 from queue import Queue
 
