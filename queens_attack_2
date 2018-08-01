@@ -1,0 +1,148 @@
+#!/bin/python3
+"""
+You will be given a square chess board with one queen and a number of obstacles placed on it. 
+Determine how many squares the queen can attack.
+
+My comment: coordinate system is a bit different:
+In obstacles array, for element i, i[0] represents y coordinate, i[1] represnts weird cordinates
+Origin is 1, 1
+
+"""
+import math
+import os
+import random
+import re
+import sys
+
+def getHorizontals(obstacles, rq, cq, n):
+    h_obstacles = []
+    h_targets = 0
+    for i in obstacles:
+        if i[0] == rq:
+            h_obstacles.append(i[1])
+            
+    max_left = cq - 1
+    max_right = n - cq
+    if len(h_obstacles) == 0:
+        return n - 1
+    else :
+        for i in h_obstacles:
+            if i < cq and cq - i - 1 < max_left:
+                max_left = cq - i - 1
+            elif i > cq and i - cq - 1 < max_right:
+                max_right = i - cq - 1
+    h_targets = max_right + max_left
+    return h_targets
+
+def getVerticals(obstacles, rq, cq, n):
+    v_obstacles = []
+    v_targets = 0
+    for i in obstacles:
+        if i[1] == cq:
+            v_obstacles.append(i[0])
+    max_down = rq - 1
+    max_up = n - rq
+    if len(v_obstacles) == 0:
+        return n - 1
+    else:
+        for i in v_obstacles:
+            if i < rq and abs(rq - i) - 1 < max_down:
+                max_down = abs(rq - i) - 1
+            elif i > rq and abs(i - rq) - 1 < max_up:
+                max_up = abs(i - rq) - 1
+    v_targets = max_up + max_down
+    return v_targets
+
+def getPosDiags(obstacles, rq, cq, n):
+    pos_diag_obstacles = []
+    
+    for i in obstacles:
+        if i[1] - cq == i[0] - rq:
+            print("i[0]:", i[0], "-", "cq", cq)
+            print(i[0] - cq, "=", i[1] - rq)
+            pos_diag_obstacles.append(i)
+
+    x = cq
+    y = rq
+    left = 0
+    right = 0
+    if x > y:
+        left = y - 1
+        right = n -x
+    else:
+        left = x - 1
+        right = n - y
+
+    print(len(pos_diag_obstacles))
+    print(pos_diag_obstacles)
+    for i in pos_diag_obstacles:
+        if i[1] > x and abs(x - i[1]) - 1 < right:
+            right = abs(x - i[1]) - 1
+        elif i[1] < x and abs(x - i[1]) - 1 < left:
+            left = abs(x - i[1]) - 1
+       
+    return left + right
+
+def getNegDiags(obstacles, rq, cq, n):
+    neg_diag_obstacles = []
+
+    for i in obstacles:
+        if i[1] - cq == -1*(i[0] - rq):
+            neg_diag_obstacles.append(i)
+            
+    x = cq
+    y = rq
+    left = 0
+    right = 0
+    
+    if x + y >= n + 1:
+        left = n - y
+        right = n - x
+    else:
+        left = x-1
+        right = y-1
+        
+    for i in neg_diag_obstacles:
+        if i[1] > x and abs(x - i[1]) - 1 < right:
+            right = abs(x - i[1]) - 1
+        elif i[1] < x and abs(x - i[1]) - 1 < left:
+            left = abs(x - i[1]) - 1
+           
+    return left + right
+
+# Complete the queensAttack function below.
+def queensAttack(n, k, r_q, c_q, obstacles):
+    h_max = getHorizontals(obstacles, r_q, c_q, n)
+    v_max = getVerticals(obstacles, r_q, c_q, n)
+    
+    pos_diag_max = getPosDiags(obstacles, r_q, c_q, n)
+    neg_diag_max = getNegDiags(obstacles, r_q, c_q, n)
+    
+    print("h", h_max, "v", v_max, "pos", pos_diag_max, "neg", neg_diag_max)
+    return h_max + v_max + pos_diag_max + neg_diag_max
+
+if __name__ == '__main__':
+    fptr = open(os.environ['OUTPUT_PATH'], 'w')
+
+    nk = input().split()
+
+    n = int(nk[0])
+
+    k = int(nk[1])
+
+    r_qC_q = input().split()
+
+    r_q = int(r_qC_q[0])
+
+    c_q = int(r_qC_q[1])
+
+    obstacles = []
+
+    for _ in range(k):
+        obstacles.append(list(map(int, input().rstrip().split())))
+
+    result = queensAttack(n, k, r_q, c_q, obstacles)
+
+    fptr.write(str(result) + '\n')
+
+    fptr.close()
